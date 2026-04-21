@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rekap Presensi | SDN 165 TJB</title>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+</head>
+<body class="bg-slate-100 p-4 md:p-8 font-sans">
+
+    <div class="max-w-6xl mx-auto">
+        <div class="bg-white p-6 rounded-[2.5rem] shadow-sm mb-6 flex flex-col md:flex-row justify-between items-center gap-4 border-l-8 border-indigo-600">
+            <div>
+                <h1 class="text-xl font-black text-slate-800 uppercase italic">Laporan Kehadiran Siswa</h1>
+                <p class="text-[10px] font-bold text-slate-400">Monitoring Absensi Realtime SDN 165 TJB</p>
+            </div>
+            <div class="flex gap-2">
+                <input type="date" id="filterTanggal" onchange="muatRekap()" class="p-3 bg-slate-50 border rounded-2xl text-xs font-bold outline-none focus:ring-2 ring-indigo-500">
+                <button onclick="downloadExcel()" class="bg-emerald-600 text-white px-4 py-2 rounded-2xl text-[10px] font-black uppercase shadow-lg">Unduh Excel</button>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 text-white">
+            <div class="bg-indigo-600 p-6 rounded-[2rem] shadow-md">
+                <h3 class="text-[10px] font-bold opacity-80 uppercase">Total Siswa Terdaftar</h3>
+                <p id="totalSiswa" class="text-3xl font-black">0</p>
+            </div>
+            <div class="bg-emerald-500 p-6 rounded-[2rem] shadow-md">
+                <h3 class="text-[10px] font-bold opacity-80 uppercase">Hadir Hari Ini</h3>
+                <p id="totalHadir" class="text-3xl font-black">0</p>
+            </div>
+            <div class="bg-rose-500 p-6 rounded-[2rem] shadow-md">
+                <h3 class="text-[10px] font-bold opacity-80 uppercase">Belum Absen (Alfa/Izin)</h3>
+                <p id="totalAlfa" class="text-3xl font-black">0</p>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-[2.5rem] shadow-sm overflow-hidden border border-slate-200">
+            <div class="p-6 border-b flex justify-between items-center">
+                <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest">Detail Kehadiran</h3>
+                <select id="filterKelas" onchange="muatRekap()" class="p-2 bg-indigo-50 text-indigo-600 rounded-xl text-[10px] font-bold outline-none">
+                    <option value="SEMUA">Semua Kelas</option>
+                    <option value="Kelas 1">Kelas 1</option><option value="Kelas 2">Kelas 2</option>
+                    <option value="Kelas 3">Kelas 3</option><option value="Kelas 4">Kelas 4</option>
+                    <option value="Kelas 5">Kelas 5</option><option value="Kelas 6">Kelas 6</option>
+                </select>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse" id="tabelRekap">
+                    <thead>
+                        <tr class="bg-slate-50 text-[10px] font-black text-slate-400 uppercase">
+                            <th class="p-4 border-b text-center">No</th>
+                            <th class="p-4 border-b">Nama Siswa</th>
+                            <th class="p-4 border-b">Kelas</th>
+                            <th class="p-4 border-b">Jam Absen</th>
+                            <th class="p-4 border-b text-center">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="rekapBody" class="text-[11px] font-bold text-slate-700 italic uppercase">
+                        </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // CONFIG FIREBASE (Gunakan punya Bapak)
+        const firebaseConfig = {
+            apiKey: "AIzaSyCUjE8WXa8Py4vnojrXDUR3uCvnQEzP6zQ",
+            databaseURL: "https://e-kantin-91f0c-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "e-kantin-91f0c",
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        // Set tanggal default hari ini
+        document.getElementById('filterTanggal').valueAsDate = new Date();
+
+        function muatRekap() {
+            const tgl = new Date(document.getElementById('filterTanggal').value).toLocaleDateString('id-ID').replace(/\//g, '-');
+            const kls = document.getElementById('filterKelas').value;
+            const body = document.getElementById('rekapBody');
+            body.innerHTML = "<tr><td colspan='5' class='p-10 text-center text-slate-300'>Memproses Data...</td></tr>";
+
+            // 1. Ambil Data Seluruh Siswa
+            db.ref('kantin_users').once('value', snapSiswa => {
+                let listSiswa = [];
+                snapSiswa.forEach(s => {
+                    if (kls === "SEMUA" || s.val().kelas === kls) {
+                        listSiswa.push(s.val());
+                    }
+                });
+
+                // 2. Ambil Data Presensi di Tanggal Terpilih
+                db.ref(`presensi_siswa/${tgl}`).once('value', snapPresensi => {
+                    const dataPresensi = snapPresensi.val() || {};
+                    body.innerHTML = "";
+                    
+                    let countHadir = 0;
+                    let countAlfa = 0;
+
+                    listSiswa.forEach((siswa, index) => {
+                        const absen = dataPresensi[siswa.id];
+                        const hadir = !!absen;
+                        
+                        if(hadir) countHadir++; else countAlfa++;
+
+                        body.innerHTML += `
+                        <tr class="border-b hover:bg-slate-50 transition-all">
+                            <td class="p-4 text-center text-slate-400 font-normal">${index + 1}</td>
+                            <td class="p-4 text-indigo-900">${siswa.nama}</td>
+                            <td class="p-4 text-slate-500">${siswa.kelas}</td>
+                            <td class="p-4">${hadir ? absen.jam : '-'}</td>
+                            <td class="p-4 text-center">
+                                <span class="px-3 py-1 rounded-full text-[9px] ${hadir ? 'bg-emerald-100 text-emerald-600' : 'bg-rose-100 text-rose-600'}">
+                                    ${hadir ? 'HADIR' : 'BELUM ABSEN'}
+                                </span>
+                            </td>
+                        </tr>`;
+                    });
+
+                    document.getElementById('totalSiswa').innerText = listSiswa.length;
+                    document.getElementById('totalHadir').innerText = countHadir;
+                    document.getElementById('totalAlfa').innerText = countAlfa;
+                });
+            });
+        }
+
+        function downloadExcel() {
+            const tgl = document.getElementById('filterTanggal').value;
+            XLSX.writeFile(XLSX.utils.table_to_book(document.getElementById("tabelRekap")), `Rekap_Presensi_${tgl}.xlsx`);
+        }
+
+        // Jalankan saat pertama load
+        muatRekap();
+    </script>
+</body>
+</html>
