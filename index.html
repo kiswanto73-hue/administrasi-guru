@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>E-GURU PRO V5.5 | SDN 165 TJB</title>
+    <title>E-GURU PRO V6 | SDN 165 TJB</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <script src="https://unpkg.com/html5-qrcode"></script>
@@ -127,8 +127,10 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2 mb-4">
                     <input type="text" id="judulFile" placeholder="Nama Dokumen" class="p-3 bg-slate-50 rounded-xl text-xs font-bold border border-slate-100 outline-none">
                     <select id="katPerangkat" class="p-3 bg-slate-50 rounded-xl text-xs font-bold border border-slate-100 outline-none">
+                        <option value="CP">CP (CAPAIAN PEMBELAJARAN)</option>
+                        <option value="ATP">ATP (ALUR TUJUAN)</option>
                         <option value="MODUL AJAR">MODUL AJAR</option>
-                        <option value="LEMBAR KERJA">LEMBAR KERJA</option>
+                        <option value="LEMBAR KERJA">LEMBAR KERJA (LKPD)</option>
                         <option value="KISI-KISI">KISI-KISI SOAL</option>
                         <option value="SOAL">SOAL EVALUASI</option>
                     </select>
@@ -190,19 +192,15 @@
             if (id === 'agenda') muatJurnal();
         }
 
-        // --- MAPEL TAMBAH MANUAL ---
         function tambahMapel() {
             const m = prompt("Masukkan Nama Mata Pelajaran Baru (Contoh: Matematika):");
             if(m) {
                 const mapelName = m.toUpperCase();
                 const sel = document.getElementById('mapelNilai');
-                
-                // Cek apakah sudah ada di dropdown
                 let exists = false;
                 for (let i = 0; i < sel.options.length; i++) {
                     if (sel.options[i].value === mapelName) { exists = true; break; }
                 }
-
                 if(!exists) {
                     const opt = document.createElement("option");
                     opt.text = mapelName; opt.value = mapelName;
@@ -248,7 +246,6 @@
             alert(c + " Nilai Berhasil Disimpan!");
         }
 
-        // --- BANK TP RELASI MAPEL ---
         function simpanTP() {
             const mapel = document.getElementById('mapelNilai').value;
             const tp = document.getElementById('inputTPBaru').value;
@@ -276,7 +273,6 @@
         }
         function pilihTP(t) { document.getElementById('descTP').value = t; }
 
-        // --- ARSIP PERANGKAT 4 LOKER ---
         function simpanPerangkat() {
             const j = document.getElementById('judulFile').value;
             const k = document.getElementById('katPerangkat').value;
@@ -287,7 +283,7 @@
         function muatPerangkat() {
             db.ref('perangkat_ajar').on('value', s => {
                 const list = document.getElementById('listPerangkat'); list.innerHTML = "";
-                const kats = ["MODUL AJAR", "LEMBAR KERJA", "KISI-KISI", "SOAL"];
+                const kats = ["CP", "ATP", "MODUL AJAR", "LEMBAR KERJA", "KISI-KISI", "SOAL"];
                 kats.forEach(kat => {
                     let items = "";
                     s.forEach(c => {
@@ -306,7 +302,6 @@
             });
         }
 
-        // --- REKAP ABSENSI REALTIME ---
         function muatRekap() {
             const k = document.getElementById('filterKelasRekap').value;
             const t = new Date().toLocaleDateString('id-ID').replace(/\//g, '-');
