@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perangkat Ajar | SDN 165 TJB</title>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 font-sans p-4 md:p-8">
+
+    <div class="max-w-4xl mx-auto">
+        <div class="bg-white p-8 rounded-[2.5rem] shadow-sm mb-6 border-b-4 border-orange-500">
+            <h1 class="text-2xl font-black text-slate-800 italic uppercase">Perangkat Pembelajaran</h1>
+            <p class="text-[10px] font-bold text-slate-400 tracking-widest mt-1">PENYIMPANAN LINK GOOGLE DRIVE</p>
+        </div>
+
+        <div class="bg-white p-6 rounded-[2rem] shadow-sm mb-8 border border-slate-100">
+            <h3 class="text-xs font-black text-slate-400 mb-4 uppercase italic">Tambah Dokumen Baru</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <input type="text" id="judulFile" placeholder="Nama Dokumen (Contoh: RPP Matematika Kls 6)" class="p-4 bg-slate-50 border-none rounded-2xl text-xs font-bold outline-none focus:ring-2 ring-orange-500">
+                <select id="kategoriFile" class="p-4 bg-slate-50 border-none rounded-2xl text-xs font-bold outline-none focus:ring-2 ring-orange-500">
+                    <option value="RPP">RPP</option>
+                    <option value="SILABUS">Silabus</option>
+                    <option value="PROTA/PROMES">Prota / Promes</option>
+                    <option value="MODUL AJAR">Modul Ajar</option>
+                </select>
+                <input type="text" id="linkDrive" placeholder="Tempel/Paste Link Google Drive di sini" class="md:col-span-2 p-4 bg-slate-50 border-none rounded-2xl text-xs font-bold outline-none focus:ring-2 ring-orange-500 text-indigo-600">
+                <button onclick="simpanLink()" class="md:col-span-2 bg-orange-500 hover:bg-orange-600 text-white p-4 rounded-2xl text-xs font-black uppercase transition-all shadow-lg shadow-orange-100">
+                    Simpan ke Perpustakaan Digital
+                </button>
+            </div>
+        </div>
+
+        <h3 class="text-sm font-black text-slate-400 mb-4 uppercase tracking-widest">Daftar File Tersimpan</h3>
+        <div id="containerFile" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            </div>
+    </div>
+
+    <script>
+        // CONFIG FIREBASE
+        const firebaseConfig = {
+            apiKey: "AIzaSyCUjE8WXa8Py4vnojrXDUR3uCvnQEzP6zQ",
+            databaseURL: "https://e-kantin-91f0c-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "e-kantin-91f0c",
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        function simpanLink() {
+            const judul = document.getElementById('judulFile').value;
+            const kategori = document.getElementById('kategoriFile').value;
+            const link = document.getElementById('linkDrive').value;
+
+            if (!judul || !link) return alert("Mohon isi Judul dan Link!");
+
+            const fileId = Date.now(); // Gunakan timestamp sebagai ID unik
+            db.ref(`perangkat_ajar/${fileId}`).set({
+                judul: judul,
+                kategori: kategori,
+                link: link,
+                tgl: new Date().toLocaleDateString('id-ID')
+            }).then(() => {
+                alert("Link Dokumen Tersimpan!");
+                document.getElementById('judulFile').value = "";
+                document.getElementById('linkDrive').value = "";
+            });
+        }
+
+        // Load Realtime
+        db.ref('perangkat_ajar').on('value', snap => {
+            const container = document.getElementById('containerFile');
+            container.innerHTML = "";
+            
+            snap.forEach(child => {
+                const f = child.val();
+                container.innerHTML += `
+                <div class="bg-white p-6 rounded-[2rem] border border-slate-100 hover:shadow-xl transition-all group relative overflow-hidden">
+                    <div class="absolute top-0 right-0 p-4 bg-orange-50 text-orange-600 rounded-bl-[2rem] font-black text-[9px] uppercase">
+                        ${f.kategori}
+                    </div>
+                    <div class="flex items-start gap-4 mt-2">
+                        <div class="bg-orange-100 p-4 rounded-2xl text-orange-600 group-hover:bg-orange-600 group-hover:text-white transition-all">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h4 class="font-black text-slate-800 text-sm uppercase leading-tight">${f.judul}</h4>
+                            <p class="text-[10px] text-slate-400 font-bold mt-1 italic">Diunggah: ${f.tgl}</p>
+                            <a href="${f.link}" target="_blank" class="inline-block mt-4 text-[10px] font-black text-indigo-600 hover:underline">
+                                BUKA DOKUMEN (DRIVE) ➜
+                            </a>
+                        </div>
+                    </div>
+                </div>`;
+            });
+        });
+    </script>
+</body>
+</html>
