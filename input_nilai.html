@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-NILAI | SDN 165 TJB</title>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 font-sans p-4 md:p-8">
+
+    <div class="max-w-5xl mx-auto">
+        <div class="bg-white p-8 rounded-[2.5rem] shadow-sm mb-6 border-b-4 border-emerald-500">
+            <h1 class="text-2xl font-black text-slate-800 mb-6 italic uppercase">Input Nilai Akademik</h1>
+            
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div>
+                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-2">Pilih Kelas</label>
+                    <select id="pilihKelas" onchange="loadDaftarSiswa()" class="w-full p-3 bg-slate-100 border-none rounded-2xl text-xs font-bold outline-none focus:ring-2 ring-emerald-500">
+                        <option value="">-- Pilih --</option>
+                        <option value="Kelas 1">Kelas 1</option>
+                        <option value="Kelas 2">Kelas 2</option>
+                        <option value="Kelas 3">Kelas 3</option>
+                        <option value="Kelas 4">Kelas 4</option>
+                        <option value="Kelas 5">Kelas 5</option>
+                        <option value="Kelas 6">Kelas 6</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-2">Mata Pelajaran</label>
+                    <select id="pilihMapel" class="w-full p-3 bg-slate-100 border-none rounded-2xl text-xs font-bold outline-none focus:ring-2 ring-emerald-500">
+                        <option value="MATEMATIKA">Matematika</option>
+                        <option value="B.INDONESIA">B. Indonesia</option>
+                        <option value="IPA">IPA</option>
+                        <option value="IPS">IPS</option>
+                        <option value="PAI">PAI</option>
+                        <option value="PJOK">PJOK</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-2">Kategori Nilai</label>
+                    <select id="pilihKategori" class="w-full p-3 bg-slate-100 border-none rounded-2xl text-xs font-bold outline-none focus:ring-2 ring-emerald-500">
+                        <option value="TUGAS_1">Tugas 1</option>
+                        <option value="TUGAS_2">Tugas 2</option>
+                        <option value="PTS">PTS (Tengah Semester)</option>
+                        <option value="PAS">PAS (Akhir Semester)</option>
+                    </select>
+                </div>
+                <div class="flex items-end">
+                    <button onclick="simpanSemuaNilai()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white p-3 rounded-2xl text-xs font-black uppercase transition-all shadow-lg shadow-emerald-200">
+                        Simpan Semua
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-[2.5rem] shadow-sm overflow-hidden border border-slate-200">
+            <table class="w-full text-left">
+                <thead>
+                    <tr class="bg-slate-50 text-[10px] font-black text-slate-400 uppercase">
+                        <th class="p-6">Nama Siswa</th>
+                        <th class="p-6 text-center">ID Siswa</th>
+                        <th class="p-6 text-right w-40">Input Nilai (0-100)</th>
+                    </tr>
+                </thead>
+                <tbody id="tabelNilaiBody" class="divide-y divide-slate-100">
+                    </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // CONFIG FIREBASE
+        const firebaseConfig = {
+            apiKey: "AIzaSyCUjE8WXa8Py4vnojrXDUR3uCvnQEzP6zQ",
+            databaseURL: "https://e-kantin-91f0c-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "e-kantin-91f0c",
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        function loadDaftarSiswa() {
+            const kls = document.getElementById('pilihKelas').value;
+            const body = document.getElementById('tabelNilaiBody');
+            if (!kls) return body.innerHTML = "";
+
+            body.innerHTML = "<tr><td colspan='3' class='p-10 text-center font-bold text-slate-300'>Memuat data siswa...</td></tr>";
+
+            db.ref('kantin_users').once('value', snap => {
+                body.innerHTML = "";
+                snap.forEach(child => {
+                    const s = child.val();
+                    if (s.kelas === kls) {
+                        body.innerHTML += `
+                        <tr class="hover:bg-emerald-50/50 transition-all">
+                            <td class="p-6 font-black text-slate-700 uppercase italic text-sm">${s.nama}</td>
+                            <td class="p-6 text-center text-xs font-bold text-slate-400">${s.id}</td>
+                            <td class="p-6 text-right">
+                                <input type="number" data-id="${s.id}" class="input-nilai w-20 p-3 bg-white border-2 border-slate-200 rounded-xl text-center font-black text-indigo-600 focus:border-emerald-500 outline-none transition-all" placeholder="0">
+                            </td>
+                        </tr>`;
+                    }
+                });
+            });
+        }
+
+        function simpanSemuaNilai() {
+            const mapel = document.getElementById('pilihMapel').value;
+            const kategori = document.getElementById('pilihKategori').value;
+            const inputs = document.querySelectorAll('.input-nilai');
+            
+            if (inputs.length === 0) return alert("Pilih kelas dulu!");
+
+            const promises = [];
+            inputs.forEach(inp => {
+                const idSiswa = inp.getAttribute('data-id');
+                const nilai = inp.value;
+
+                if (nilai !== "") {
+                    promises.push(
+                        db.ref(`penilaian/${idSiswa}/${mapel}/${kategori}`).set(nilai)
+                    );
+                }
+            });
+
+            Promise.all(promises).then(() => {
+                alert("✅ Nilai Berhasil Disimpan ke Database!");
+            }).catch(err => {
+                alert("Gagal menyimpan: " + err);
+            });
+        }
+    </script>
+</body>
+</html>
