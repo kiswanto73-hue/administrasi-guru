@@ -47,17 +47,8 @@
             <button onclick="showPage('dashboard')" class="w-full flex items-center gap-4 hover:bg-white/10 p-4 rounded-2xl font-bold text-[10px] transition-all"><i class="fas fa-th-large w-5 text-indigo-400"></i> Dashboard</button>
             <button onclick="showPage('presensi')" class="w-full flex items-center gap-4 hover:bg-white/10 p-4 rounded-2xl font-bold text-[10px] transition-all"><i class="fas fa-qrcode w-5 text-emerald-400"></i> Scan Presensi</button>
             <button onclick="showPage('rekap')" class="w-full flex items-center gap-4 hover:bg-white/10 p-4 rounded-2xl font-bold text-[10px] transition-all"><i class="fas fa-calendar-alt w-5 text-blue-400"></i> Rekap Absensi</button>
-            
-            <div class="pt-4 pb-1 px-4 text-[8px] font-black text-slate-500 uppercase tracking-widest">Administrasi</div>
-            <button onclick="showPage('perangkat')" class="w-full flex items-center gap-4 hover:bg-white/10 p-4 rounded-2xl font-bold text-[10px] transition-all"><i class="fas fa-folder-open w-5 text-orange-400"></i> Perangkat Ajar</button>
             <button onclick="showPage('jurnal')" class="w-full flex items-center gap-4 hover:bg-white/10 p-4 rounded-2xl font-bold text-[10px] transition-all"><i class="fas fa-book w-5 text-rose-400"></i> Jurnal Guru</button>
             <button onclick="showPage('leaderboard')" class="w-full flex items-center gap-4 hover:bg-white/10 p-4 rounded-2xl font-bold text-[10px] transition-all"><i class="fas fa-trophy w-5 text-yellow-400"></i> Leaderboard</button>
-            
-            <div class="pt-4 pb-1 px-4 text-[8px] font-black text-slate-500 uppercase tracking-widest">Eksternal</div>
-            <a href="https://kiswanto73-hue.github.io/Bintang_Sekolah/" target="_blank" class="w-full flex items-center gap-4 hover:bg-white/10 p-4 rounded-2xl font-bold text-[10px] transition-all">
-                <i class="fas fa-star w-5 text-yellow-300"></i> Bintang Sekolah
-            </a>
-
             <button onclick="location.reload()" class="w-full flex items-center gap-4 text-rose-400 p-4 font-bold text-[10px] mt-6 hover:bg-rose-500/10 rounded-2xl transition-all"><i class="fas fa-sign-out-alt w-5"></i> Keluar</button>
         </nav>
     </aside>
@@ -71,88 +62,15 @@
                     <i class="fas fa-fingerprint text-2xl mb-4"></i>
                     <p class="font-black uppercase italic text-[10px]">Scan Presensi</p>
                 </div>
-                <div onclick="showPage('perangkat')" class="bg-orange-500 p-6 rounded-[2.5rem] text-white shadow-lg cursor-pointer hover:scale-95 transition-all">
-                    <i class="fas fa-folder-open text-2xl mb-4"></i>
-                    <p class="font-black uppercase italic text-[10px]">Perangkat Ajar</p>
+                <div onclick="showPage('rekap')" class="bg-blue-500 p-6 rounded-[2.5rem] text-white shadow-lg cursor-pointer hover:scale-95 transition-all">
+                    <i class="fas fa-calendar-check text-2xl mb-4"></i>
+                    <p class="font-black uppercase italic text-[10px]">Rekap Absen</p>
                 </div>
                 <div onclick="showPage('leaderboard')" class="bg-yellow-500 p-6 rounded-[2.5rem] text-white shadow-lg cursor-pointer hover:scale-95 transition-all">
                     <i class="fas fa-award text-2xl mb-4"></i>
                     <p class="font-black uppercase italic text-[10px]">Top Siswa</p>
                 </div>
-                <a href="https://kiswanto73-hue.github.io/Bintang_Sekolah/" target="_blank" class="bg-emerald-500 p-6 rounded-[2.5rem] text-white shadow-lg cursor-pointer hover:scale-95 transition-all">
-                    <i class="fas fa-external-link-alt text-2xl mb-4"></i>
-                    <p class="font-black uppercase italic text-[10px]">Bintang Sekolah</p>
-                </a>
             </div>
-        </section>
-
-        <section id="perangkat" class="page">
-            <div class="bg-white p-8 rounded-[3rem] shadow-sm mb-6 border-l-[12px] border-orange-500">
-                <h2 class="font-black uppercase italic text-xl">Perangkat Ajar</h2>
-                <p class="text-[10px] font-bold text-slate-400 uppercase">Modul, RPP, dan Silabus</p>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="bg-white p-8 rounded-[2.5rem] shadow-sm border-2 border-slate-50 flex items-center justify-between">
-                    <div>
-                        <h4 class="font-black text-xs uppercase mb-1">Modul Ajar Semester 2</h4>
-                        <p class="text-[9px] text-slate-400 font-bold uppercase">Format: PDF/DOCX</p>
-                    </div>
-                    <button class="bg-slate-100 p-4 rounded-2xl text-slate-400 hover:text-indigo-600"><i class="fas fa-download"></i></button>
-                </div>
-                </div>
-        </section>
-
-        <section id="jurnal" class="page">
-            <div class="bg-white p-8 rounded-[3rem] shadow-sm mb-6 border-l-[12px] border-rose-500">
-                <h2 class="font-black uppercase italic text-xl">Jurnal Harian</h2>
-                <p class="text-[10px] font-bold text-slate-400 uppercase">Catatan Kegiatan Belajar Mengajar</p>
-            </div>
-            <div class="bg-white p-8 rounded-[3rem] shadow-sm mb-6">
-                <textarea id="isiJurnal" class="w-full p-6 bg-slate-50 rounded-3xl outline-none border-2 border-transparent focus:border-rose-400 font-bold text-sm mb-4" rows="3" placeholder="Tulis kegiatan hari ini..."></textarea>
-                <button onclick="simpanJurnal()" class="bg-rose-500 text-white px-8 py-4 rounded-2xl font-black uppercase text-[10px] shadow-lg">Simpan Catatan</button>
-            </div>
-            <div id="listJurnal" class="space-y-4"></div>
-        </section>
-
-        <section id="rekap" class="page">
-            <div class="bg-white p-8 rounded-[3rem] shadow-sm mb-6 border-l-[12px] border-blue-500 flex justify-between items-center">
-                <div>
-                    <h2 class="font-black uppercase italic text-xl">Laporan Absensi</h2>
-                    <p id="labelKelas" class="text-[10px] font-bold text-slate-400 uppercase italic"></p>
-                </div>
-                <div class="flex gap-2">
-                    <input type="date" id="filterTgl" onchange="muatRekapHarian()" class="p-3 bg-slate-100 rounded-xl text-xs font-black outline-none">
-                    <button onclick="exportExcel()" class="bg-slate-900 text-white px-6 py-3 rounded-xl text-[10px] font-black uppercase">Excel</button>
-                </div>
-            </div>
-            <div class="flex gap-2 mb-4">
-                <button onclick="toggleRekap('harian')" id="btnHarian" class="bg-indigo-600 text-white px-6 py-2 rounded-full font-black text-[10px] shadow-lg">Harian</button>
-                <button onclick="toggleRekap('bulanan')" id="btnBulanan" class="bg-slate-200 text-slate-500 px-6 py-2 rounded-full font-black text-[10px]">Bulanan (Matrix)</button>
-            </div>
-            <div id="viewHarian" class="bg-white rounded-[3rem] overflow-hidden shadow-sm p-4">
-                <table class="w-full text-left" id="tabelRekap">
-                    <thead class="bg-slate-50 text-[9px] font-black text-slate-400 uppercase">
-                        <tr><th class="px-8 py-5">Nama Siswa</th><th class="px-8 py-5 text-center">Status</th><th class="px-8 py-5 text-right">Aksi</th></tr>
-                    </thead>
-                    <tbody id="bodyRekap" class="divide-y divide-slate-50 font-bold uppercase text-slate-600 text-xs"></tbody>
-                </table>
-            </div>
-            <div id="viewBulanan" class="hidden bg-white rounded-[3rem] shadow-sm p-8">
-                <div class="rekap-scroll">
-                    <table class="w-full border-collapse" id="tabelBulanan">
-                        <thead id="headBulanan" class="bg-slate-100 font-black text-[8px] uppercase"></thead>
-                        <tbody id="bodyBulanan" class="text-[9px] font-bold uppercase"></tbody>
-                    </table>
-                </div>
-            </div>
-        </section>
-
-        <section id="leaderboard" class="page">
-            <div class="bg-white p-8 rounded-[3rem] shadow-sm mb-6 border-l-[12px] border-yellow-400">
-                <h2 class="font-black uppercase italic text-xl">🏆 Peringkat Siswa Rajin</h2>
-                <p id="labelKelasLeader" class="text-[10px] font-bold text-slate-400 uppercase italic"></p>
-            </div>
-            <div class="grid grid-cols-1 gap-3" id="listLeaderboard"></div>
         </section>
 
         <section id="presensi" class="page">
@@ -162,9 +80,47 @@
                 <div id="lastScanName" class="text-lg font-black text-indigo-600 uppercase">Siap Scan...</div>
             </div>
         </section>
+
+        <section id="rekap" class="page">
+            <div class="bg-white p-8 rounded-[3rem] shadow-sm mb-6 border-l-[12px] border-blue-500 flex justify-between items-center">
+                <div>
+                    <h2 class="font-black uppercase italic text-xl">Laporan Absensi</h2>
+                    <p id="labelKelas" class="text-[10px] font-bold text-slate-400 uppercase italic"></p>
+                </div>
+                <input type="date" id="filterTgl" onchange="muatRekapHarian()" class="p-3 bg-slate-100 rounded-xl text-xs font-black outline-none">
+            </div>
+            <div id="viewHarian" class="bg-white rounded-[3rem] overflow-hidden shadow-sm p-4">
+                <table class="w-full text-left" id="tabelRekap">
+                    <thead class="bg-slate-50 text-[9px] font-black text-slate-400 uppercase">
+                        <tr><th class="px-8 py-5">Nama Siswa</th><th class="px-8 py-5 text-center">Status</th><th class="px-8 py-5 text-right">Aksi</th></tr>
+                    </thead>
+                    <tbody id="bodyRekap" class="divide-y divide-slate-50 font-bold uppercase text-slate-600 text-xs"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="jurnal" class="page">
+            <div class="bg-white p-8 rounded-[3rem] shadow-sm mb-6 border-l-[12px] border-rose-500">
+                <h2 class="font-black uppercase italic text-xl">Jurnal Harian</h2>
+                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Catatan KBM</p>
+            </div>
+            <div class="bg-white p-8 rounded-[3rem] shadow-sm mb-6">
+                <textarea id="isiJurnal" class="w-full p-6 bg-slate-50 rounded-3xl outline-none border-2 border-transparent focus:border-rose-400 font-bold text-sm mb-4" rows="3" placeholder="Tulis kegiatan hari ini..."></textarea>
+                <button onclick="simpanJurnal()" class="bg-rose-500 text-white px-8 py-4 rounded-2xl font-black uppercase text-[10px] shadow-lg">Simpan</button>
+            </div>
+            <div id="listJurnal" class="space-y-4"></div>
+        </section>
+
+        <section id="leaderboard" class="page">
+            <div class="bg-white p-8 rounded-[3rem] shadow-sm mb-6 border-l-[12px] border-yellow-400">
+                <h2 class="font-black uppercase italic text-xl">🏆 Peringkat Rajin</h2>
+            </div>
+            <div class="grid grid-cols-1 gap-3" id="listLeaderboard"></div>
+        </section>
     </main>
 
     <script>
+        // --- KONFIGURASI FIREBASE ---
         const firebaseConfig = {
             apiKey: "AIzaSyCUjE8WXa8Py4vnojrXDUR3uCvnQEzP6zQ",
             databaseURL: "https://e-kantin-91f0c-default-rtdb.asia-southeast1.firebasedatabase.app",
@@ -172,9 +128,12 @@
         };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
-        let infoGuru = null;
-        let html5QrCode;
 
+        let infoGuru = null;
+        let html5QrCode = null;
+        let isProcessing = false;
+
+        // --- LOGIN ---
         function prosesLogin() {
             const id = document.getElementById('idGuruLogin').value.trim();
             db.ref('kantin_users/' + id).once('value', s => {
@@ -184,20 +143,131 @@
                     document.getElementById('mainApp').classList.remove('hidden');
                     document.getElementById('welcomeName').innerText = "Halo, " + infoGuru.nama;
                     document.getElementById('kelasAmpu').innerText = "Wali Kelas: " + infoGuru.jabatan;
-                    document.getElementById('labelKelas').innerText = "Data: " + infoGuru.jabatan;
-                    document.getElementById('labelKelasLeader').innerText = "Hanya " + infoGuru.jabatan;
+                    document.getElementById('labelKelas').innerText = "Kelas: " + infoGuru.jabatan;
                     showPage('dashboard');
-                } else { alert("Akses Ditolak!"); }
+                } else { alert("ID GURU TIDAK TERDAFTAR!"); }
             });
         }
 
-        function showPage(id) {
+        // --- NAVIGASI HALAMAN ---
+        async function showPage(id) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.getElementById(id).classList.add('active');
-            if (id === 'presensi') startScan(); else if(html5QrCode) html5QrCode.stop();
+
+            // Logika Stop Scanner jika pindah halaman
+            if (id !== 'presensi') {
+                if (html5QrCode && html5QrCode.getState() === 2) {
+                    await html5QrCode.stop();
+                }
+            }
+
+            if (id === 'presensi') startScan();
             if (id === 'rekap') muatRekapHarian();
             if (id === 'leaderboard') muatLeaderboard();
             if (id === 'jurnal') muatJurnal();
+        }
+
+        // --- SCANNER LOGIC (VERSI ANTI-ERROR) ---
+        async function startScan() {
+            if (html5QrCode) {
+                try { if(html5QrCode.getState() === 2) await html5QrCode.stop(); } catch(e){}
+            }
+            html5QrCode = new Html5Qrcode("reader");
+            const config = { fps: 20, qrbox: 250 };
+            
+            html5QrCode.start({ facingMode: "environment" }, config, (txt) => {
+                if(isProcessing) return; // Mencegah scan ganda cepat
+                isProcessing = true;
+
+                db.ref('kantin_users/' + txt).once('value', s => {
+                    if(s.exists()){
+                        const d = s.val();
+                        // Format Tanggal DD-MM-YYYY
+                        const skrg = new Date();
+                        const tgl = ("0" + skrg.getDate()).slice(-2) + "-" + ("0" + (skrg.getMonth() + 1)).slice(-2) + "-" + skrg.getFullYear();
+                        
+                        db.ref(`presensi_siswa/${tgl}/${txt}`).set({
+                            nama: d.nama,
+                            kelas: d.kelas,
+                            status: "HADIR",
+                            jam: skrg.getHours() + ":" + ("0" + skrg.getMinutes()).slice(-2)
+                        }).then(() => {
+                            showNotif(d.nama + " HADIR!");
+                            document.getElementById('lastScanName').innerText = "✅ " + d.nama;
+                            setTimeout(() => { isProcessing = false; }, 2000);
+                        });
+                    } else {
+                        document.getElementById('lastScanName').innerText = "❌ ID TIDAK TERDAFTAR";
+                        setTimeout(() => { isProcessing = false; }, 2000);
+                    }
+                });
+            }).catch(err => console.error("Kamera Error:", err));
+        }
+
+        // --- REKAP HARIAN (AUTO UPDATE) ---
+        function muatRekapHarian() {
+            let tglInput = document.getElementById('filterTgl').value;
+            let tgl = tglInput ? tglInput.split("-").reverse().join("-") : 
+                      ("0" + new Date().getDate()).slice(-2) + "-" + ("0" + (new Date().getMonth() + 1)).slice(-2) + "-" + new Date().getFullYear();
+
+            db.ref('kantin_users').once('value', s1 => {
+                db.ref(`presensi_siswa/${tgl}`).on('value', s2 => {
+                    const dataA = s2.val() || {};
+                    const body = document.getElementById('bodyRekap');
+                    body.innerHTML = "";
+                    s1.forEach(sis => {
+                        const d = sis.val();
+                        if(d.kelas === infoGuru.jabatan) {
+                            const p = dataA[d.id] || { status: "ALFA" };
+                            let clr = p.status === 'HADIR' ? 'bg-emerald-100 text-emerald-600' : 'bg-rose-100 text-rose-600';
+                            body.innerHTML += `<tr>
+                                <td class="px-8 py-4 font-black uppercase text-[10px]">${d.nama}</td>
+                                <td class="px-8 py-4 text-center"><span class="px-3 py-1 rounded-full text-[8px] font-black ${clr}">${p.status}</span></td>
+                                <td class="px-8 py-4 text-right">
+                                    <button onclick="upStat('${tgl}','${d.id}','${d.nama}','HADIR')" class="w-6 h-6 bg-emerald-500 text-white rounded text-[8px]">H</button>
+                                    <button onclick="upStat('${tgl}','${d.id}','${d.nama}','IZIN')" class="w-6 h-6 bg-blue-500 text-white rounded text-[8px]">I</button>
+                                </td>
+                            </tr>`;
+                        }
+                    });
+                });
+            });
+        }
+
+        function upStat(tgl, id, nama, stat) {
+            db.ref(`presensi_siswa/${tgl}/${id}`).update({ nama, status: stat, jam: "Manual" });
+        }
+
+        function showNotif(msg) {
+            const n = document.getElementById('notifScan');
+            document.getElementById('msgNotif').innerText = msg;
+            n.style.opacity = "1";
+            setTimeout(() => n.style.opacity = "0", 2000);
+        }
+
+        // --- FITUR LAIN ---
+        function simpanJurnal() {
+            const teks = document.getElementById('isiJurnal').value;
+            if(!teks) return;
+            const tgl = ("0" + new Date().getDate()).slice(-2) + "-" + ("0" + (new Date().getMonth() + 1)).slice(-2) + "-" + new Date().getFullYear();
+            db.ref(`jurnal_guru/${infoGuru.jabatan}/${tgl}`).set({ tanggal: tgl, isi: teks, guru: infoGuru.nama }).then(() => {
+                document.getElementById('isiJurnal').value = "";
+                muatJurnal();
+            });
+        }
+
+        function muatJurnal() {
+            db.ref(`jurnal_guru/${infoGuru.jabatan}`).limitToLast(5).once('value', s => {
+                const list = document.getElementById('listJurnal');
+                list.innerHTML = "";
+                s.forEach(jx => {
+                    const j = jx.val();
+                    list.innerHTML = `<div class="bg-white p-6 rounded-[2rem] shadow-sm border-r-8 border-rose-200">
+                        <p class="text-[8px] font-black text-slate-400 mb-1">${j.tanggal}</p>
+                        <p class="text-[11px] font-bold text-slate-600 uppercase">${j.isi}</p>
+                    </div>` + list.innerHTML;
+                });
+            });
         }
 
         function muatLeaderboard() {
@@ -217,140 +287,12 @@
                         }
                     });
                     list.sort((a,b) => b.skor - a.skor);
-                    container.innerHTML = list.slice(0,10).map((S,i) => `
-                        <div class="bg-white p-5 rounded-3xl flex justify-between items-center shadow-sm border-2 ${i<3?'border-yellow-200':'border-transparent'}">
-                            <div class="flex items-center gap-4">
-                                <span class="text-xl">${i==0?'🥇':i==1?'🥈':i==2?'🥉':'👤'}</span>
-                                <p class="font-black text-xs uppercase">${S.nama}</p>
-                            </div>
-                            <p class="font-black text-indigo-600 text-xs">${S.skor} Hari</p>
-                        </div>
-                    `).join('');
+                    container.innerHTML = list.slice(0,5).map((S,i) => `<div class="bg-white p-5 rounded-3xl flex justify-between items-center shadow-sm">
+                        <div class="flex items-center gap-4"><span class="text-xl">${i==0?'🥇':'👤'}</span><p class="font-black text-xs uppercase">${S.nama}</p></div>
+                        <p class="font-black text-indigo-600 text-xs">${S.skor} Hari</p>
+                    </div>`).join('');
                 });
             });
-        }
-
-        function simpanJurnal() {
-            const teks = document.getElementById('isiJurnal').value;
-            if(!teks) return;
-            const tgl = new Date().toLocaleDateString('id-ID').replace(/\//g, '-');
-            db.ref(`jurnal_guru/${infoGuru.jabatan}/${tgl}`).set({
-                tanggal: tgl, isi: teks, guru: infoGuru.nama
-            }).then(() => { 
-                document.getElementById('isiJurnal').value = "";
-                muatJurnal();
-                showNotif("Jurnal Tersimpan");
-            });
-        }
-
-        function muatJurnal() {
-            db.ref(`jurnal_guru/${infoGuru.jabatan}`).limitToLast(10).once('value', s => {
-                const list = document.getElementById('listJurnal');
-                list.innerHTML = "";
-                s.forEach(jx => {
-                    const j = jx.val();
-                    list.innerHTML = `
-                        <div class="bg-white p-6 rounded-[2rem] shadow-sm border-r-8 border-rose-200">
-                            <p class="text-[8px] font-black text-slate-400 mb-1">${j.tanggal}</p>
-                            <p class="text-[11px] font-bold text-slate-600 uppercase">${j.isi}</p>
-                        </div>
-                    ` + list.innerHTML;
-                });
-            });
-        }
-
-        function muatRekapHarian() {
-            const tgl = document.getElementById('filterTgl').value.split("-").reverse().join("-");
-            db.ref('kantin_users').once('value', s1 => {
-                db.ref(`presensi_siswa/${tgl}`).on('value', s2 => {
-                    const dataA = s2.val() || {};
-                    const body = document.getElementById('bodyRekap');
-                    body.innerHTML = "";
-                    s1.forEach(sis => {
-                        const d = sis.val();
-                        if(d.kelas === infoGuru.jabatan) {
-                            const p = dataA[d.id] || { status: "ALFA" };
-                            let clr = p.status === 'HADIR' ? 'bg-emerald-100 text-emerald-600' : p.status === 'IZIN' ? 'bg-blue-100 text-blue-600' : p.status === 'SAKIT' ? 'bg-yellow-100 text-yellow-600' : 'bg-rose-100 text-rose-600';
-                            body.innerHTML += `<tr>
-                                <td class="px-8 py-4 font-black uppercase text-[10px]">${d.nama}</td>
-                                <td class="px-8 py-4 text-center"><span class="px-3 py-1 rounded-full text-[8px] font-black ${clr}">${p.status}</span></td>
-                                <td class="px-8 py-4 text-right">
-                                    <div class="flex gap-1 justify-end">
-                                        <button onclick="upStat('${tgl}','${d.id}','${d.nama}','HADIR')" class="w-6 h-6 bg-emerald-500 text-white rounded text-[8px]">H</button>
-                                        <button onclick="upStat('${tgl}','${d.id}','${d.nama}','IZIN')" class="w-6 h-6 bg-blue-500 text-white rounded text-[8px]">I</button>
-                                        <button onclick="upStat('${tgl}','${d.id}','${d.nama}','SAKIT')" class="w-6 h-6 bg-yellow-500 text-white rounded text-[8px]">S</button>
-                                    </div>
-                                </td>
-                            </tr>`;
-                        }
-                    });
-                });
-            });
-        }
-
-        function upStat(tgl, id, nama, stat) {
-            db.ref(`presensi_siswa/${tgl}/${id}`).set({ nama, kelas: infoGuru.jabatan, status: stat, jam: "Manual" });
-        }
-
-        function startScan() {
-            html5QrCode = new Html5Qrcode("reader");
-            html5QrCode.start({ facingMode: "environment" }, { fps: 20, qrbox: 250 }, (txt) => {
-                db.ref('kantin_users/' + txt).once('value', s => {
-                    if(s.exists() && s.val().kelas === infoGuru.jabatan){
-                        const t = new Date().toLocaleDateString('id-ID').replace(/\//g, '-');
-                        db.ref(`presensi_siswa/${t}/${txt}`).set({
-                            nama: s.val().nama, kelas: s.val().kelas, status: "HADIR", jam: new Date().toLocaleTimeString('id-ID')
-                        }).then(() => { showNotif(s.val().nama + " Hadir!"); });
-                    }
-                });
-            });
-        }
-
-        function toggleRekap(type) {
-            document.getElementById('viewHarian').classList.toggle('hidden', type === 'bulanan');
-            document.getElementById('viewBulanan').classList.toggle('hidden', type === 'harian');
-            if(type==='bulanan') muatRekapBulanan();
-        }
-
-        function muatRekapBulanan() {
-            const bln = new Date().getMonth() + 1;
-            const thn = new Date().getFullYear();
-            const jml = new Date(thn, bln, 0).getDate();
-            const head = document.getElementById('headBulanan');
-            const body = document.getElementById('bodyBulanan');
-            let hRow = `<tr><th class="p-2 border sticky left-0 bg-white">Siswa</th>`;
-            for(let i=1; i<=jml; i++) hRow += `<th class="cell-status border">${i}</th>`;
-            head.innerHTML = hRow + `</tr>`;
-            db.ref('kantin_users').once('value', sSiswa => {
-                db.ref('presensi_siswa').once('value', sAbsen => {
-                    const allData = sAbsen.val() || {};
-                    body.innerHTML = "";
-                    sSiswa.forEach(sis => {
-                        const d = sis.val();
-                        if(d.kelas === infoGuru.jabatan) {
-                            let bRow = `<tr><td class="p-2 border font-black sticky left-0 bg-white uppercase">${d.nama}</td>`;
-                            for(let i=1; i<=jml; i++) {
-                                const tK = `${String(i).padStart(2,'0')}-${String(bln).padStart(2,'0')}-${thn}`;
-                                const st = (allData[tK] && allData[tK][d.id]) ? allData[tK][d.id].status.charAt(0) : 'A';
-                                bRow += `<td class="cell-status border status-${st}">${st}</td>`;
-                            }
-                            body.innerHTML += bRow + `</tr>`;
-                        }
-                    });
-                });
-            });
-        }
-
-        function showNotif(msg) {
-            const n = document.getElementById('notifScan');
-            document.getElementById('msgNotif').innerText = msg;
-            n.style.opacity = "1";
-            setTimeout(() => n.style.opacity = "0", 2000);
-        }
-
-        function exportExcel() {
-            const table = document.getElementById('viewBulanan').classList.contains('hidden') ? 'tabelRekap' : 'tabelBulanan';
-            XLSX.writeFile(XLSX.utils.table_to_book(document.getElementById(table)), `Rekap_${infoGuru.jabatan}.xlsx`);
         }
     </script>
 </body>
