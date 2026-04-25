@@ -54,6 +54,7 @@
     </aside>
 
     <main id="mainApp" class="lg:ml-64 p-4 md:p-8 hidden">
+        
         <section id="dashboard" class="page active">
             <h2 id="welcomeName" class="text-3xl font-black text-slate-800 italic uppercase mb-2">Halo, Guru!</h2>
             <p id="kelasAmpu" class="text-xs font-bold text-indigo-600 uppercase mb-8"></p>
@@ -137,8 +138,9 @@
         function prosesLogin() {
             const id = document.getElementById('idGuruLogin').value.trim();
             db.ref('kantin_users/' + id).once('value', s => {
-                if(s.exists() && s.val().kelas === "GURU"){
-                    infoGuru = s.val();
+                const val = s.val();
+                if(s.exists() && val.kelas === "GURU"){
+                    infoGuru = val;
                     document.getElementById('loginPage').classList.add('hidden');
                     document.getElementById('mainApp').classList.remove('hidden');
                     document.getElementById('welcomeName').innerText = "Halo, " + infoGuru.nama;
@@ -154,7 +156,7 @@
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.getElementById(id).classList.add('active');
 
-            // Logika Stop Scanner jika pindah halaman
+            // Matikan scanner jika pindah dari halaman presensi
             if (id !== 'presensi') {
                 if (html5QrCode && html5QrCode.getState() === 2) {
                     await html5QrCode.stop();
@@ -167,34 +169,44 @@
             if (id === 'jurnal') muatJurnal();
         }
 
-        // --- SCANNER LOGIC (VERSI ANTI-ERROR) ---
+        // --- SCANNER LOGIC (STABIL) ---
         async function startScan() {
+            // Bersihkan instance lama jika ada
             if (html5QrCode) {
-                try { if(html5QrCode.getState() === 2) await html5QrCode.stop(); } catch(e){}
+                try { 
+                    if(html5QrCode.getState() === 2) await html5QrCode.stop(); 
+                    await html5QrCode.clear();
+                } catch(e){ console.log("Cleaning scanner..."); }
             }
+            
             html5QrCode = new Html5Qrcode("reader");
             const config = { fps: 20, qrbox: 250 };
             
             html5QrCode.start({ facingMode: "environment" }, config, (txt) => {
-                if(isProcessing) return; // Mencegah scan ganda cepat
+                if(isProcessing) return;
                 isProcessing = true;
 
                 db.ref('kantin_users/' + txt).once('value', s => {
                     if(s.exists()){
                         const d = s.val();
-                        // Format Tanggal DD-MM-YYYY
+                        // Buat Tanggal DD-MM-YYYY
                         const skrg = new Date();
                         const tgl = ("0" + skrg.getDate()).slice(-2) + "-" + ("0" + (skrg.getMonth() + 1)).slice(-2) + "-" + skrg.getFullYear();
                         
+                        // Simpan Presensi
                         db.ref(`presensi_siswa/${tgl}/${txt}`).set({
                             nama: d.nama,
                             kelas: d.kelas,
                             status: "HADIR",
                             jam: skrg.getHours() + ":" + ("0" + skrg.getMinutes()).slice(-2)
                         }).then(() => {
-                            showNotif(d.nama + " HADIR!");
+                            showNotif(d.nama + " BERHASIL!");
                             document.getElementById('lastScanName').innerText = "✅ " + d.nama;
+                            // Jeda 2 detik agar tidak terscan berkali-kali
                             setTimeout(() => { isProcessing = false; }, 2000);
+                        }).catch(err => {
+                            alert("Simpan Gagal: " + err.message);
+                            isProcessing = false;
                         });
                     } else {
                         document.getElementById('lastScanName').innerText = "❌ ID TIDAK TERDAFTAR";
@@ -204,28 +216,35 @@
             }).catch(err => console.error("Kamera Error:", err));
         }
 
-        // --- REKAP HARIAN (AUTO UPDATE) ---
+        // --- REKAP HARIAN (REALTIME) ---
         function muatRekapHarian() {
             let tglInput = document.getElementById('filterTgl').value;
             let tgl = tglInput ? tglInput.split("-").reverse().join("-") : 
                       ("0" + new Date().getDate()).slice(-2) + "-" + ("0" + (new Date().getMonth() + 1)).slice(-2) + "-" + new Date().getFullYear();
+
+            // Matikan listener lama agar tidak berat
+            db.ref(`presensi_siswa/${tgl}`).off();
 
             db.ref('kantin_users').once('value', s1 => {
                 db.ref(`presensi_siswa/${tgl}`).on('value', s2 => {
                     const dataA = s2.val() || {};
                     const body = document.getElementById('bodyRekap');
                     body.innerHTML = "";
+                    
                     s1.forEach(sis => {
                         const d = sis.val();
+                        // Hanya tampilkan siswa yang kelasnya sama dengan jabatan Wali Kelas
                         if(d.kelas === infoGuru.jabatan) {
                             const p = dataA[d.id] || { status: "ALFA" };
-                            let clr = p.status === 'HADIR' ? 'bg-emerald-100 text-emerald-600' : 'bg-rose-100 text-rose-600';
+                            let clr = p.status === 'HADIR' ? 'bg-emerald-100 text-emerald-600' : 
+                                      p.status === 'IZIN' ? 'bg-blue-100 text-blue-600' : 'bg-rose-100 text-rose-600';
+                            
                             body.innerHTML += `<tr>
                                 <td class="px-8 py-4 font-black uppercase text-[10px]">${d.nama}</td>
                                 <td class="px-8 py-4 text-center"><span class="px-3 py-1 rounded-full text-[8px] font-black ${clr}">${p.status}</span></td>
-                                <td class="px-8 py-4 text-right">
-                                    <button onclick="upStat('${tgl}','${d.id}','${d.nama}','HADIR')" class="w-6 h-6 bg-emerald-500 text-white rounded text-[8px]">H</button>
-                                    <button onclick="upStat('${tgl}','${d.id}','${d.nama}','IZIN')" class="w-6 h-6 bg-blue-500 text-white rounded text-[8px]">I</button>
+                                <td class="px-8 py-4 text-right flex justify-end gap-1">
+                                    <button onclick="upStat('${tgl}','${d.id}','${d.nama}','HADIR')" class="w-7 h-7 bg-emerald-500 text-white rounded-lg shadow-sm font-black text-[9px]">H</button>
+                                    <button onclick="upStat('${tgl}','${d.id}','${d.nama}','IZIN')" class="w-7 h-7 bg-blue-500 text-white rounded-lg shadow-sm font-black text-[9px]">I</button>
                                 </td>
                             </tr>`;
                         }
@@ -235,22 +254,30 @@
         }
 
         function upStat(tgl, id, nama, stat) {
-            db.ref(`presensi_siswa/${tgl}/${id}`).update({ nama, status: stat, jam: "Manual" });
+            db.ref(`presensi_siswa/${tgl}/${id}`).update({ 
+                nama: nama, 
+                status: stat, 
+                jam: "Manual" 
+            });
         }
 
         function showNotif(msg) {
             const n = document.getElementById('notifScan');
             document.getElementById('msgNotif').innerText = msg;
             n.style.opacity = "1";
-            setTimeout(() => n.style.opacity = "0", 2000);
+            setTimeout(() => n.style.opacity = "0", 2500);
         }
 
-        // --- FITUR LAIN ---
+        // --- JURNAL ---
         function simpanJurnal() {
             const teks = document.getElementById('isiJurnal').value;
             if(!teks) return;
             const tgl = ("0" + new Date().getDate()).slice(-2) + "-" + ("0" + (new Date().getMonth() + 1)).slice(-2) + "-" + new Date().getFullYear();
-            db.ref(`jurnal_guru/${infoGuru.jabatan}/${tgl}`).set({ tanggal: tgl, isi: teks, guru: infoGuru.nama }).then(() => {
+            db.ref(`jurnal_guru/${infoGuru.jabatan}/${tgl}`).set({ 
+                tanggal: tgl, 
+                isi: teks, 
+                guru: infoGuru.nama 
+            }).then(() => {
                 document.getElementById('isiJurnal').value = "";
                 muatJurnal();
             });
@@ -270,6 +297,7 @@
             });
         }
 
+        // --- LEADERBOARD ---
         function muatLeaderboard() {
             const container = document.getElementById('listLeaderboard');
             db.ref('kantin_users').once('value', sSiswa => {
@@ -288,7 +316,10 @@
                     });
                     list.sort((a,b) => b.skor - a.skor);
                     container.innerHTML = list.slice(0,5).map((S,i) => `<div class="bg-white p-5 rounded-3xl flex justify-between items-center shadow-sm">
-                        <div class="flex items-center gap-4"><span class="text-xl">${i==0?'🥇':'👤'}</span><p class="font-black text-xs uppercase">${S.nama}</p></div>
+                        <div class="flex items-center gap-4">
+                            <span class="text-xl">${i==0?'🥇':i==1?'🥈':i==2?'🥉':'👤'}</span>
+                            <p class="font-black text-xs uppercase">${S.nama}</p>
+                        </div>
                         <p class="font-black text-indigo-600 text-xs">${S.skor} Hari</p>
                     </div>`).join('');
                 });
