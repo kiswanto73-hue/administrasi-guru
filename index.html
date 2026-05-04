@@ -44,6 +44,8 @@
             <button onclick="showPage('perangkat')" class="w-full text-left p-4 hover:bg-white/10 rounded-2xl"><i class="fas fa-file-alt mr-3"></i> Perangkat Ajar</button>
             <button onclick="showPage('jurnal')" class="w-full text-left p-4 hover:bg-white/10 rounded-2xl"><i class="fas fa-book mr-3"></i> Jurnal Guru</button>
             <button onclick="showPage('leaderboard')" class="w-full text-left p-4 hover:bg-white/10 rounded-2xl"><i class="fas fa-trophy mr-3"></i> Leaderboard</button>
+            <a href="https://kiswanto73-hue.github.io/Bintang_Sekolah/" target="_blank" class="block w-full text-left p-4 hover:bg-yellow-400/20 text-yellow-400 rounded-2xl border border-yellow-400/30 mt-4"><i class="fas fa-star mr-3"></i> Bintang Sekolah</a>
+            
             <button onclick="location.reload()" class="w-full text-left p-4 text-rose-400 mt-10"><i class="fas fa-sign-out-alt mr-3"></i> Keluar</button>
         </nav>
     </aside>
@@ -52,7 +54,7 @@
         <section id="dashboard" class="page active">
             <h2 id="welcomeName" class="text-3xl font-black text-slate-800 italic uppercase">Halo!</h2>
             <p id="kelasAmpu" class="text-xs font-bold text-indigo-600 uppercase mb-8"></p>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <div onclick="showPage('presensi')" class="bg-indigo-600 p-8 rounded-[2.5rem] text-white shadow-lg cursor-pointer">
                     <i class="fas fa-fingerprint text-2xl mb-4"></i><p class="font-black uppercase text-[10px]">Scan Presensi</p>
                 </div>
@@ -62,6 +64,9 @@
                 <div onclick="showPage('rekap')" class="bg-blue-500 p-8 rounded-[2.5rem] text-white shadow-lg cursor-pointer">
                     <i class="fas fa-calendar-check text-2xl mb-4"></i><p class="font-black uppercase text-[10px]">Rekap Absen</p>
                 </div>
+                <a href="https://kiswanto73-hue.github.io/Bintang_Sekolah/" target="_blank" class="bg-yellow-500 p-8 rounded-[2.5rem] text-white shadow-lg cursor-pointer flex flex-col items-start">
+                    <i class="fas fa-star text-2xl mb-4"></i><p class="font-black uppercase text-[10px]">Bintang Sekolah</p>
+                </a>
             </div>
         </section>
 
@@ -163,11 +168,9 @@
             if (id === 'leaderboard') muatLeaderboard();
         }
 
-        // --- REKAP & EDIT ABSEN ---
         function muatRekapHarian() {
             let tglIn = document.getElementById('filterTgl').value;
             let tgl = tglIn ? tglIn.split("-").reverse().join("-") : ("0" + new Date().getDate()).slice(-2) + "-" + ("0" + (new Date().getMonth() + 1)).slice(-2) + "-" + new Date().getFullYear();
-            
             db.ref('kantin_users').once('value', s1 => {
                 db.ref(`presensi_siswa/${tgl}`).on('value', s2 => {
                     const dataA = s2.val() || {};
@@ -182,10 +185,10 @@
                                 <td class="p-5 font-black text-[10px]">${d.nama}</td>
                                 <td class="p-5 text-center"><span class="px-3 py-1 rounded-full text-[8px] font-black ${clr}">${p.status}</span></td>
                                 <td class="p-5 text-right flex justify-end gap-1">
-                                    <button onclick="upStat('${tgl}','${d.id}','${d.nama}','HADIR')" title="Hadir" class="w-8 h-8 bg-emerald-500 text-white rounded-lg text-[9px] font-bold">H</button>
-                                    <button onclick="upStat('${tgl}','${d.id}','${d.nama}','SAKIT')" title="Sakit" class="w-8 h-8 bg-yellow-500 text-white rounded-lg text-[9px] font-bold">S</button>
-                                    <button onclick="upStat('${tgl}','${d.id}','${d.nama}','IZIN')" title="Izin" class="w-8 h-8 bg-blue-500 text-white rounded-lg text-[9px] font-bold">I</button>
-                                    <button onclick="upStat('${tgl}','${d.id}','${d.nama}','ALFA')" title="Alfa" class="w-8 h-8 bg-rose-500 text-white rounded-lg text-[9px] font-bold">A</button>
+                                    <button onclick="upStat('${tgl}','${d.id}','${d.nama}','HADIR')" class="w-8 h-8 bg-emerald-500 text-white rounded-lg text-[9px] font-bold">H</button>
+                                    <button onclick="upStat('${tgl}','${d.id}','${d.nama}','SAKIT')" class="w-8 h-8 bg-yellow-500 text-white rounded-lg text-[9px] font-bold">S</button>
+                                    <button onclick="upStat('${tgl}','${d.id}','${d.nama}','IZIN')" class="w-8 h-8 bg-blue-500 text-white rounded-lg text-[9px] font-bold">I</button>
+                                    <button onclick="upStat('${tgl}','${d.id}','${d.nama}','ALFA')" class="w-8 h-8 bg-rose-500 text-white rounded-lg text-[9px] font-bold">A</button>
                                 </td>
                             </tr>`;
                         }
@@ -195,14 +198,9 @@
         }
 
         function upStat(tgl, id, nama, stat) {
-            db.ref(`presensi_siswa/${tgl}/${id}`).update({ 
-                nama: nama, 
-                status: stat, 
-                jam: "Update Guru" 
-            }).then(() => showNotif("Status " + nama + " diubah ke " + stat));
+            db.ref(`presensi_siswa/${tgl}/${id}`).update({ nama: nama, status: stat, jam: "Update Guru" }).then(() => showNotif("Status " + nama + " diperbarui"));
         }
 
-        // --- PERANGKAT ---
         function pilihKategori(kat) {
             kategoriAktif = kat;
             document.getElementById('labelKategori').innerText = kat;
@@ -239,7 +237,6 @@
 
         function hapusFile(key) { if(confirm("Hapus?")) db.ref(`perangkat_ajar/${infoGuru.jabatan}/${kategoriAktif}/${key}`).remove(); }
 
-        // --- LAINNYA ---
         async function startScan() {
             html5QrCode = new Html5Qrcode("reader");
             html5QrCode.start({ facingMode: "environment" }, { fps: 20, qrbox: 250 }, (txt) => {
